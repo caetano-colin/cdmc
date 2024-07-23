@@ -1,7 +1,7 @@
 ### Prerequisites
-Make sure you have completed the steps in the [main README.md](../README.md) first,
-and in particular you have configured the `environment-variables.sh` and
-created the requried infrastructure.
+
+Make sure you have completed the steps in the [main README.md](../README.md) first, and in particular you have configured the `environment-variables.sh` and
+created the required infrastructure.
 
 ### Data Ingestion
 
@@ -23,9 +23,16 @@ data generation utility and convert the files to the right format.
     * Load the data to GCS
     * Load the data from GCS to BQ
 
+    ```bash
+    source load_data.sh
+    ```
+
+    This step will upload data from your local machine to a Google Cloud Bucket and should take a while depending on your network conditions.
+
 1. Once the script has completed, check whether the data is present in [BigQuery](https://console.cloud.google.com/bigquery)
 
 ### How to customise
+
 Note how the data load process creates a lineage event for every file being loaded.
 You can inspect the file `LineageManager.py` for an example on how to achieve this.
 Creating a lineage event for every data load is critical for compliance with the data lineage controls.

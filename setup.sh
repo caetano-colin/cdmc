@@ -27,6 +27,7 @@ do
     p_HAS_BILLING="$(gcloud beta billing projects describe $p | grep billingEnabled | cut -f2 -d' ')"
     if [[ $p_HAS_BILLING == "false" ]]; then
         echo "\n\nERROR: Billing account for project '$p' is not found. Billing must be enabled to run script."
+        echo "Tip: You can run the command below to link a billing account:\n gcloud billing projects link <YOUR_PROJECT_ID> --billing-account=<YOUR_BILLING_ACCOUNT_ID>"
         return 1
     fi
 done
