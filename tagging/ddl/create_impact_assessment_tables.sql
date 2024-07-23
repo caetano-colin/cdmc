@@ -79,49 +79,49 @@ create or replace table impact_assessment.asset_ia_details(
 
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.hr.Employee', 'ww', 'PIA', 'gs://impact_assessments/hr/Employee/report-ww.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.hr.Employee', 'ww', 'PIA', 'gs://impact_assessments/hr/Employee/report-ww.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.hr.Employee', 'uk', 'DPIA', 'gs://impact_assessments/hr/Employee/report-uk.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.hr.Employee', 'uk', 'DPIA', 'gs://impact_assessments/hr/Employee/report-uk.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.hr.Employee', 'us', 'PIA', 'gs://impact_assessments/hr/Employee/report-us.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.hr.Employee', 'us', 'PIA', 'gs://impact_assessments/hr/Employee/report-us.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.oltp.Customer', 'ww', 'PIA', 'gs://impact_assessments/oltp/Customer/report-ww.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.oltp.Customer', 'ww', 'PIA', 'gs://impact_assessments/oltp/Customer/report-ww.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.oltp.Customer', 'uk', 'DPIA', 'gs://impact_assessments/oltp/Customer/report-uk.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.oltp.Customer', 'uk', 'DPIA', 'gs://impact_assessments/oltp/Customer/report-uk.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.oltp.Customer', 'us', 'PIA', 'gs://impact_assessments/oltp/Customer/report-us.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.oltp.Customer', 'us', 'PIA', 'gs://impact_assessments/oltp/Customer/report-us.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.crm.NewCust', 'ww', 'PIA', 'gs://impact_assessments/crm/NewCust/report-ww.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.crm.NewCust', 'ww', 'PIA', 'gs://impact_assessments/crm/NewCust/report-ww.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.crm.NewCust', 'uk', 'DPIA', 'gs://impact_assessments/crm/NewCust/report-uk.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.crm.NewCust', 'uk', 'DPIA', 'gs://impact_assessments/crm/NewCust/report-uk.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.crm.NewCust', 'us', 'PIA', 'gs://impact_assessments/crm/NewCust/report-us.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.crm.NewCust', 'us', 'PIA', 'gs://impact_assessments/crm/NewCust/report-us.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.crm.UpdCust', 'ww', 'PIA', 'gs://impact_assessments/crm/UpdCust/report-ww.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.crm.UpdCust', 'ww', 'PIA', 'gs://impact_assessments/crm/UpdCust/report-ww.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.crm.UpdCust', 'uk', 'DPIA', 'gs://impact_assessments/crm/UpdCust/report-uk.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.crm.UpdCust', 'uk', 'DPIA', 'gs://impact_assessments/crm/UpdCust/report-uk.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.crm.UpdCust', 'us', 'PIA', 'gs://impact_assessments/crm/UpdCust/report-us.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.crm.UpdCust', 'us', 'PIA', 'gs://impact_assessments/crm/UpdCust/report-us.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.finwire.FINWIRE2006Q4_SEC', 'ww', 'PIA', 'gs://impact_assessments/finwire/FINWIRE2006Q4_SEC/report-ww.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.finwire.FINWIRE2006Q4_SEC', 'ww', 'PIA', 'gs://impact_assessments/finwire/FINWIRE2006Q4_SEC/report-ww.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.finwire.FINWIRE2006Q4_SEC', 'us', 'DPIA', 'gs://impact_assessments/finwire/FINWIRE2006Q4_SEC/report-us.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.finwire.FINWIRE2006Q4_SEC', 'us', 'DPIA', 'gs://impact_assessments/finwire/FINWIRE2006Q4_SEC/report-us.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.finwire.FINWIRE1995Q4_SEC', 'ww', 'PIA', 'gs://impact_assessments/finwire/FINWIRE1995Q4_SEC/report-ww.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.finwire.FINWIRE1995Q4_SEC', 'ww', 'PIA', 'gs://impact_assessments/finwire/FINWIRE1995Q4_SEC/report-ww.pdf', '2023-01-01', '2023-02-02');
 
 insert into impact_assessment.asset_ia_details(asset_name, subject_location, ia_type, ia_link, ia_creation_date, ia_last_modified_date) 
-	values('sdw-conf-b1927e-bcc1.finwire.FINWIRE1995Q4_SEC', 'us', 'PIA', 'gs://impact_assessments/finwire/FINWIRE1995Q4_SEC/report-us.pdf', '2023-01-01', '2023-02-02');
+	values('PROJECT_ID_DATA.finwire.FINWIRE1995Q4_SEC', 'us', 'PIA', 'gs://impact_assessments/finwire/FINWIRE1995Q4_SEC/report-us.pdf', '2023-01-01', '2023-02-02');

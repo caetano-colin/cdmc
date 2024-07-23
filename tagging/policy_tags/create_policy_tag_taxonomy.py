@@ -39,7 +39,7 @@ def process_request(yaml_file):
         taxonomy = get_or_create_taxonomy(project, region, name)
         
         policy_tags = taxonomy_contents.get("policy_tags")
-        #print(policy_tags)
+        print(policy_tags)
         process_policy_tags(project, region, taxonomy, policy_tags, None)
         
                    

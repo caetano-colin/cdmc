@@ -71,19 +71,19 @@ insert into entitlement_management.use_purpose(use_id, use_description, operatio
 create or replace table entitlement_management.data_asset(data_asset_id string, data_asset_name string, data_owner_name string, data_owner_email string, is_authoritative bool);
 	
 insert into entitlement_management.data_asset(data_asset_id, data_asset_name, data_owner_name, data_owner_email, is_authoritative) 
-	values('finwire', 'sdw-conf-b1927e-bcc1.finwire.FINWIRE*', 'Eduardo Marreto', 'edumarreto@secure-blueprint-demo-one.ongcp.co', True);
+	values('finwire', 'PROJECT_ID_DATA.finwire.FINWIRE*', 'Eduardo Marreto', 'edumarreto@secure-blueprint-demo-one.ongcp.co', True);
 	
 insert into entitlement_management.data_asset(data_asset_id, data_asset_name, data_owner_name, data_owner_email, is_authoritative) 
-	values('crm', 'sdw-conf-b1927e-bcc1.crm.*', 'Svitlana Gavrylova', 'gavrylova@secure-blueprint-demo-one.ongcp.co', True);
+	values('crm', 'PROJECT_ID_DATA.crm.*', 'Svitlana Gavrylova', 'gavrylova@secure-blueprint-demo-one.ongcp.co', True);
 	
 insert into entitlement_management.data_asset(data_asset_id, data_asset_name, data_owner_name, data_owner_email, is_authoritative) 
-	values('oltp', 'sdw-conf-b1927e-bcc1.oltp.*', 'Julien Phalip', 'jphalip@secure-blueprint-demo-one.ongcp.co', False);
+	values('oltp', 'PROJECT_ID_DATA.oltp.*', 'Julien Phalip', 'jphalip@secure-blueprint-demo-one.ongcp.co', False);
 	
 insert into entitlement_management.data_asset(data_asset_id, data_asset_name, data_owner_name, data_owner_email, is_authoritative) 
-	values('hr', 'sdw-conf-b1927e-bcc1.hr.*', 'Mark Tomlinson', 'marktomlinson@secure-blueprint-demo-one.ongcp.co', False);	
+	values('hr', 'PROJECT_ID_DATA.hr.*', 'Mark Tomlinson', 'marktomlinson@secure-blueprint-demo-one.ongcp.co', False);	
 
 insert into entitlement_management.data_asset(data_asset_id, data_asset_name, data_owner_name, data_owner_email, is_authoritative) 
-	values('sales', 'sdw-conf-b1927e-bcc1.sales.*', 'Mose Tronci', 'mtronci@secure-blueprint-demo-one.ongcp.co', True);	
+	values('sales', 'PROJECT_ID_DATA.sales.*', 'Mose Tronci', 'mtronci@secure-blueprint-demo-one.ongcp.co', True);	
 	
 
 /* This table references the provider_agreement_id and use_id fields */
