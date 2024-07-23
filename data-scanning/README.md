@@ -1,8 +1,10 @@
 ### Data Scanning
 
-The data scanning aspects of the solution consists of using Data Loss Prevention (DLP) to create inspection jobs that scan each table in the sample dataset. The jobs produce a findings table with all the infotypes associated with each sensitive field. Follow the steps below to deployment the data scanning aspects of the solution. 
+The data scanning aspects of the solution consists of using Data Loss Prevention (DLP) to create inspection jobs that scan each table in the sample dataset. The jobs produce a findings table with all the infotypes associated with each sensitive field. An infoType is a type of sensitive data, such as a name, email address, telephone number, identification number, credit card number, and so on.
 
-This guide assumes that you have already completed the data ingestion deployment.   
+Follow the steps below to deployment the data scanning aspects of the solution.
+
+This guide assumes that you have already completed the data ingestion deployment.
 
 1. Install the python package dependencies:
     ```

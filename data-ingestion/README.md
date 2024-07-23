@@ -27,7 +27,7 @@ data generation utility and convert the files to the right format.
     source load_data.sh
     ```
 
-    This step will upload data from your local machine to a Google Cloud Bucket and should take a while depending on your network conditions.
+    This step will upload data from your local machine to a Google Cloud Bucket and should take a while (up to 2 hours) depending on your network conditions.
 
 1. Once the script has completed, check whether the data is present in [BigQuery](https://console.cloud.google.com/bigquery)
 

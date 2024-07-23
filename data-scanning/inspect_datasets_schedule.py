@@ -163,8 +163,10 @@ def create_output_datasets():
             bq_client_results.get_dataset(dataset)  # Checks if dataset exists.
             print(f'Dataset {dataset} already exists')
         except NotFound:
-            bq_client_results.create_dataset(dataset)  # Creates dataset if it doesn't exist.
-            print(f'Created results dataset {dataset}')
+            dataset_obj = bigquery.Dataset(f"{result_project}.{dataset}")
+            dataset_obj.location = region
+            bq_client_results.create_dataset(dataset_obj) # Creates dataset if it doesn't exist.
+            print(f'Created results dataset {dataset} in {result_project} project')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
