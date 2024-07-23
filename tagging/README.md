@@ -94,12 +94,12 @@ This guide assumes that you have already completed the data ingestion deployment
 1. Run the `sql` queries below to create and populate tables.
 
     ```bash
-    bq query < create_data_classification_tables.sql
-    bq query < create_data_retention_tables.sql
-    bq query < create_impact_assessment_tables.sql
-    bq query < create_populate_entitlement_tables.sql
-    bq query < create_security_policy_tables.sql
-    bq query < information_schema_view.sql
+    bq query --use_legacy_sql=false < create_data_classification_tables.sql
+    bq query --use_legacy_sql=false < create_data_retention_tables.sql
+    bq query --use_legacy_sql=false < create_impact_assessment_tables.sql
+    bq query --use_legacy_sql=false < create_populate_entitlement_tables.sql
+    bq query --use_legacy_sql=false < create_security_policy_tables.sql
+    bq query --use_legacy_sql=false < information_schema_view.sql
     ```
 
     > Note: Data ownership contains fictional emails and names for demonstration purposes on `create_populate_entitlement_tables.sql`.
