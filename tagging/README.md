@@ -275,260 +275,362 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
 
 #### Part 4: Tag Engine deployment and configuration
 
-1. Deploy Tag Engine in your GCP project by following Tag Engine's [deployment guide](https://github.com/GoogleCloudPlatform/datacatalog-tag-engine/blob/cloud-run/README.md).
+1. Deploy Tag Engine in your Governance Project by following Tag Engine's [deployment guide](https://github.com/GoogleCloudPlatform/datacatalog-tag-engine/blob/cloud-run/README.md). Information below will help you choose parameters when deploying:
+    - Designate `$TAG_CREATOR_SA` and `$CLOUD_RUN_SA` as the service accounts to be used on the tag engine deployment. You can access their values by running `echo $TAG_CREATOR_SA` and `echo $CLOUD_RUN_SA`.
+    - Replace `TAG_ENGINE_SA` in `tagengine.ini` with `CLOUD_RUN_SA` variable value.
+    - Replace `TAG_CREATOR_SA` in `tagengine.ini` with `TAG_CREATOR_SA` variable value.
+    - Replace `TAG_ENGINE_PROJECT` in `tagengine.ini` with `PROJECT_ID_GOV` variable value.
+    - Replace `FIRESTORE_PROJECT` in `tagengine.ini` with `PROJECT_ID_GOV` variable value.
+    - Replace `FIRESTORE_DB` in `tagengine.ini` with `default` value.
+    - Replace `TAG_HISTORY_PROJECT` in `tagengine.ini` with `PROJECT_ID_GOV` variable value.
+    - Replace `TAG_HISTORY_DATASET` in `tagengine.ini` with `tag_history_logs` value.
+    - Replace `JOB_METADATA_PROJECT` in `tagengine.ini` with `PROJECT_ID_GOV` variable value.
+    - Create `deploy/terraform.tfvars` with the following values, remember to replace placeholder values with values from your environment:
+
+        ```terraform
+        bigquery_project = "PROJECT_ID_DATA"
+        data_catalog_project = "PROJECT_ID_DATA"
+        firestore_project = "PROJECT_ID_GOV"
+        tag_engine_project = "PROJECT_ID_GOV"
+        tag_engine_sa = "CLOUD_RUN_SA"
+        tag_creator_sa = "TAG_CREATOR_SA"
+
+        firestore_database = default
+        csv_bucket = "REPLACE_WITH_BUCKET_NAME" # bucket is created when following tag engine readme, 
+        ```
+
+    - There is a known issue with the Terraform deployment with tag engine. If you encounter the error `The requested URL was not found on this server` when you try to create a configuration from the API, the issue is that the container didn't build correctly. Try to rebuild and redeploy the Cloud Run API service with this command:
+
+        ```bash
+        cd datacatalog-tag-engine
+        gcloud run deploy tag-engine-api \
+            --source . \
+            --platform managed \
+            --region $REGION \
+            --no-allow-unauthenticated \
+            --ingress=all \
+            --memory=4G \
+            --timeout=60m \
+            --service-account=$CLOUD_RUN_SA
+        ```
+
+    - Assign additional roles to `TAG_CREATOR_SA`:
+
+        ```bash
+        gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --role="roles/bigquery.dataViewer" --member="serviceAccount:$TAG_CREATOR_SA"
+
+        gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --role="roles/bigquery.user" --member="serviceAccount:$TAG_CREATOR_SA"
+        
+        gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --role="roles/datacatalog.viewer" --member="serviceAccount:$TAG_CREATOR_SA"
+
+        gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/datacatalog.tagTemplateUser" --member="serviceAccount:$TAG_CREATOR_SA"
+        ```
 
 1. Set environment variables:
 
-```bash
-export TAG_ENGINE_URL=`gcloud run services describe tag-engine --format="value(status.url)"`
-export IAM_TOKEN=$(gcloud auth print-identity-token)
-export OAUTH_TOKEN=$(gcloud auth application-default print-access-token)
-```
+    ```bash
+    export TAG_ENGINE_URL=`gcloud run services describe tag-engine-api --format="value(status.url)"`
+    export IAM_TOKEN=$(gcloud auth print-identity-token)
+    export OAUTH_TOKEN=$(gcloud auth application-default print-access-token)
+    ```
 
-7. Configure tag history:
+1. Retrieve the Data Taxonomy Name by running the command below:
 
-```
-curl -X POST $TAG_ENGINE_URL/configure_tag_history \
- -d '{"bigquery_region":"$REGION", "bigquery_project":"$PROJECT_ID_GOV", "bigquery_dataset":"tag_history_logs", "enabled":true}' \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    ```bash
+    gcloud data-catalog taxonomies list --location=$REGION --project=$PROJECT_ID_GOV
+    ```
 
-Replace the `bigquery_region`, `bigquery_project`, and `bigquery_dataset` with your own values.
+1. Take note of the `name` field, retrieved by the command above and insert it in the shell variable below:
 
-8. Create the tag engine configurations:
+    ```bash
+    export TAXONOMY_NAME=<INSERT_TAXONOMY_HERE>
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
- -d @tag_engine_configs/data_sensitivity_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+1. Replace placeholders in `tag_engine_configs`:
 
-curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
- -d @tag_engine_configs/data_sensitivity_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    ```bash
+    #Linux
+    sed -i tag_engine_configs/*.json \
+        -e "s:REPLACE_WITH_YOUR_DATA_TAXONOMY:$TAXONOMY_NAME:g" \
+        -e "s/PROJECT_ID_DATA/$PROJECT_ID_DATA/g" \
+        -e "s/PROJECT_ID_GOV/$PROJECT_ID_GOV/g" \
+        -e "s/REGION/$REGION/g" \
+        -e "s/PROJECT_NUMBER_DATA/$PROJECT_NUMBER_DATA/g"
+    ```
 
-curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
- -d @tag_engine_configs/data_sensitivity_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+1. Give permission for current authenticated user to impersonate Tag Creator:
 
-curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
- -d @tag_engine_configs/data_sensitivity_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    ```bash
+    gcloud iam service-accounts add-iam-policy-binding $TAG_CREATOR_SA \
+        --project=$PROJECT_ID_GOV \
+        --role="roles/iam.serviceAccountUser" \
+        --member="user:$AUTHENTICATED_USER"
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cdmc_controls_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+1. Create the tag engine configurations, take note of the `config_uuid` that each command outputs, it will be used later on when orchestrating the workflow:
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cdmc_controls_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
+    -d @tag_engine_configs/data_sensitivity_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cdmc_controls_oltp.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
+    -d @tag_engine_configs/data_sensitivity_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cdmc_controls_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
+    -d @tag_engine_configs/data_sensitivity_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cdmc_controls_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
+    -d @tag_engine_configs/data_sensitivity_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-```
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/security_policy_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
+    -d @tag_engine_configs/data_sensitivity_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
+    
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cdmc_controls_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/security_policy_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cdmc_controls_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/security_policy_oltp.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cdmc_controls_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/security_policy_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cdmc_controls_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/security_policy_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cdmc_controls_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cost_metrics_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/security_policy_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cost_metrics_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/security_policy_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cost_metrics_oltp.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/security_policy_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cost_metrics_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/security_policy_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/cost_metrics_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/security_policy_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/completeness_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cost_metrics_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/completeness_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cost_metrics_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/completeness_oltp.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cost_metrics_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/completeness_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cost_metrics_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/completeness_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/cost_metrics_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/correctness_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/completeness_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/correctness_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/completeness_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/correctness_oltp.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/completeness_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/correctness_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/completeness_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
- -d @tag_engine_configs/correctness_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/completeness_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/impact_assessment_crm.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/correctness_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/impact_assessment_hr.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/correctness_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/impact_assessment_oltp.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/correctness_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/impact_assessment_sales.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/correctness_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
 
-curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
- -d @tag_engine_configs/impact_assessment_finwire.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
+    -d @tag_engine_configs/correctness_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
 
-```
-curl -X POST $TAG_ENGINE_URL/create_export_config \
- -d @tag_engine_configs/export_all_tags.json \
- -H "Authorization: Bearer $IAM_TOKEN" \
- -H "oauth_token: $OAUTH_TOKEN"
-```
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/impact_assessment_crm.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/impact_assessment_hr.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/impact_assessment_oltp.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/impact_assessment_sales.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+
+    curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
+    -d @tag_engine_configs/impact_assessment_finwire.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
+
+    ```bash
+    curl -X POST $TAG_ENGINE_URL/create_export_config \
+    -d @tag_engine_configs/export_all_tags.json \
+    -H "Authorization: Bearer $IAM_TOKEN" \
+    -H "oauth_token: $OAUTH_TOKEN"
+    ```
 
 #### Part 5: Tag update orchestration
 
-9. Enable the Cloud Workflows API.
+1. Enable `workflows.googleapis.com` on Governance Project:
 
-10. Open each yaml file under the `/orchestration` folder, and replace the `config_uuid` values starting on line 9 with the actual values you received from the previous step when creating the configs. You'll also need to replace the project id values in the `caller_workflow.yaml` file.
+    ```bash
+    gcloud services enable workflows.googleapis.com --project=$PROJECT_ID_GOV
+    ```
 
-10. Deploy the workflows:
+1. Open each yaml file under the `/orchestration` folder, and replace the `config_uuid` values starting on line 9 with the actual values you received from the previous step when creating the configs.
 
-To deploy a workflow, you need to specify a service account that you'd like the workflow to run as. We recommend you use the cloud run service account which you created for running Tag Engine. This will be referred to as CLOUD_RUN_SA in the commands below.
+1. Replace `REPLACE_WITH_TAG_ENGINE_URL` placeholder with your `TAG_ENGINE_URL`:
 
-```
-gcloud workflows deploy tag-updates-data-sensitivity --location=$REGION \
- --source=tag_updates_data_sensitivity.yaml --service-account=CLOUD_RUN_SA
+    ```bash
+    # Linux
+    sed "s#REPLACE_WITH_TAG_ENGINE_URL#$TAG_ENGINE_URL#g" -i orchestration/*.yaml
+    ```
 
-gcloud workflows deploy tag-updates-cdmc-controls --location=$REGION \
- --source=tag_updates_cdmc_controls.yaml --service-account=CLOUD_RUN_SA
+1. You'll also need to replace the project id values in the yaml files.
 
-gcloud workflows deploy tag-updates-security-policy --location=$REGION \
- --source=tag_updates_security_policy.yaml --service-account=CLOUD_RUN_SA
+    ```bash
+    # Linux
+    sed "s/PROJECT_ID_GOV/$PROJECT_ID_GOV/g" -i orchestration/*.yaml
+    ```
 
-gcloud workflows deploy tag-updates-cost-metrics --location=$REGION \
- --source=tag_updates_cost_metrics.yaml --service-account=CLOUD_RUN_SA
+1. To deploy a workflow, you need to specify a service account that you'd like the workflow to run as. We recommend you use the cloud run service account which you created for running Tag Engine. This will be referred to as CLOUD_RUN_SA in the commands below.
 
-gcloud workflows deploy tag-updates-completeness --location=$REGION \
- --source=tag_updates_completeness.yaml --service-account=CLOUD_RUN_SA
+    ```bash
+    cd orchestration
 
-gcloud workflows deploy tag-updates-correctness --location=$REGION \
- --source=tag_updates_correctness.yaml --service-account=CLOUD_RUN_SA
+    gcloud workflows deploy tag-updates-data-sensitivity --location=$REGION \
+    --source=tag_updates_data_sensitivity.yaml --service-account=$CLOUD_RUN_SA
 
-gcloud workflows deploy tag-updates-impact-assessment --location=$REGION \
- --source=tag_updates_impact_assessment.yaml --service-account=CLOUD_RUN_SA
+    gcloud workflows deploy tag-updates-cdmc-controls --location=$REGION \
+    --source=tag_updates_cdmc_controls.yaml --service-account=$CLOUD_RUN_SA
 
-gcloud workflows deploy tag-exports-all-templates --location=$REGION \
- --source=tag_exports_all_templates.yaml --service-account=CLOUD_RUN_SA
+    gcloud workflows deploy tag-updates-security-policy --location=$REGION \
+    --source=tag_updates_security_policy.yaml --service-account=$CLOUD_RUN_SA
 
-gcloud workflows deploy oauth-token --location=$REGION \
- --source=oauth_token.yaml --service-account=CLOUD_RUN_SA
+    gcloud workflows deploy tag-updates-cost-metrics --location=$REGION \
+    --source=tag_updates_cost_metrics.yaml --service-account=$CLOUD_RUN_SA
 
-gcloud workflows deploy caller_workflow --location=$REGION \
- --source=caller_workflow.yaml --service-account=CLOUD_RUN_SA
-```
+    gcloud workflows deploy tag-updates-completeness --location=$REGION \
+    --source=tag_updates_completeness.yaml --service-account=$CLOUD_RUN_SA
 
-11. Open the Cloud Workflows UI and create a job trigger for the `caller_workflow`. The `caller_workflow` executes all of the other workflows in the right sequence. The `caller_workflow` takes about ~70 minutes to run. By creating the job trigger, you are scheduling the `caller_workflow` to run on a regular interval.
+    gcloud workflows deploy tag-updates-correctness --location=$REGION \
+    --source=tag_updates_correctness.yaml --service-account=$CLOUD_RUN_SA
+
+    gcloud workflows deploy tag-updates-impact-assessment --location=$REGION \
+    --source=tag_updates_impact_assessment.yaml --service-account=$CLOUD_RUN_SA
+
+    gcloud workflows deploy tag-exports-all-templates --location=$REGION \
+    --source=tag_exports_all_templates.yaml --service-account=$CLOUD_RUN_SA
+
+    gcloud workflows deploy oauth-token --location=$REGION \
+    --source=oauth_token.yaml --service-account=$CLOUD_RUN_SA
+
+    gcloud workflows deploy caller_workflow --location=$REGION \
+    --source=caller_workflow.yaml --service-account=$CLOUD_RUN_SA
+    ```
+
+1. Assign `roles/workflows.invoker` and `roles/cloudbuild.builds.editor` to `CLOUD_RUN_SA`:
+
+    ```bash
+    gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --member="serviceAccount:$CLOUD_RUN_SA" --role="roles/workflows.invoker"
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --member="serviceAccount:$CLOUD_RUN_SA" --role="roles/cloudbuild.builds.editor"   
+    ```
+
+1. Open the Cloud Workflows UI `<https://console.cloud.google.com/workflows?project=PROJECT_ID_GOV>` and create a job trigger for the `caller_workflow`. The `caller_workflow` executes all of the other workflows in the right sequence. The `caller_workflow` takes about ~70 minutes to run. By creating the job trigger, you are scheduling the `caller_workflow` to run on a regular interval.
