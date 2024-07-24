@@ -38,6 +38,7 @@ def event_handler(request):
     dataset = request_json['calls'][0][2].strip()
     table = request_json['calls'][0][3].strip()
 
+    print(f"request parameters: mode={mode} project={project} dataset={dataset} table={table}")
     try:
         if mode == 'bytes':
             physical_bytes_sum = run(mode, project, dataset, table)
@@ -67,7 +68,7 @@ def run(mode, project, dataset, table):
 
     # get the region for the dataset where the destination table resides
     location = bq_client.get_dataset(project + '.' + dataset).location
-    #print('location:', location)
+    print('location:', location)
 
     # are there any data transfer jobs that have written into this table
     jobs_exist_sql = ('select resource.labels.config_id from {}'
@@ -76,7 +77,7 @@ def run(mode, project, dataset, table):
                     ' and resource.type = "bigquery_dts_config" '
                     ' and jsonPayload.message like "%(table {}) completed successfully."'.format(DATA_TRANSFER_LOG_TABLE,
                                                                                           LAST_30_DAYS, location, table))
-    #print('jobs_exist_sql:', jobs_exist_sql)
+    print('jobs_exist_sql:', jobs_exist_sql)
 
     rows = list(bq_client.query(jobs_exist_sql).result())
 
@@ -95,7 +96,7 @@ def run(mode, project, dataset, table):
                    ' and date(timestamp) >= {}'
                    ' and resource.type = "bigquery_dts_config"').format(DATA_TRANSFER_LOG_TABLE, config_id, LAST_30_DAYS)
 
-        #print(src_sql)
+        print(src_sql)
 
         row = list(bq_client.query(src_sql).result())
 

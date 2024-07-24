@@ -102,21 +102,184 @@ This guide assumes that you have already completed the data ingestion deployment
     bq query --use_legacy_sql=false < information_schema_view.sql
     ```
 
-    > Note: Data ownership contains fictional emails and names for demonstration purposes on `create_populate_entitlement_tables.sql`.
+    > Note: The sql files contains fictional data for demonstration purposes.
 
 #### Part 3: Creating Remote Functions
 
-1. Create the remote BigQuery functions
+For each subfolder in `/remote_functions`, create a Python Cloud Function with `requirements.txt` and `main.py`. Once the function has been created, wrap it with a remote BigQuery function using the `create_remote_function.sh`. For more details on creating remote BigQuery functions, refer to the [product documentation](https://cloud.google.com/bigquery/docs/remote-functions#create_a_remote_function).
 
-For each subfolder in `/remote_functions`, create a Python Cloud Function with `requirements.txt` and `main.py`. Once the function has been created, wrap it with a remote BigQuery function using the `create_remove_function.sh`. For more details on creating remote BigQuery functions, refer to the [product documentation](https://cloud.google.com/bigquery/docs/remote-functions#create_a_remote_function).
+Before proceeding with the steps below, ensure you have run `environment-variables.sh` script and have variables like `$REGION`, `$PROJECT_ID_DATA` available at your shell.
+
+1. Create `remote_functions` dataset in Governance project:
+
+    ```bash
+    bq mk --location=$REGION --project_id=$PROJECT_ID_GOV --dataset remote_functions
+    ```
+
+1. Set the default project to the Governance project:
+
+    ```bash
+    gcloud config set project $PROJECT_ID_GOV
+    ```
+
+1. Create `get_bytes_transferred` function:
+
+    ```bash
+    pushd remote_functions/bytes_transferred
+
+    gcloud functions deploy get_bytes_transferred \
+    --runtime python37 \
+    --trigger-http \
+    --no-allow-unauthenticated \
+    --ingress-settings internal-and-gclb \
+    --entry-point event_handler \
+    --source ./function \
+    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA
+
+    source ./create_remote_function.sh
+
+    popd
+    ```
+
+1. Create `get_location_policy` function:
+
+    ```bash
+    pushd remote_functions/location_policy
+
+    gcloud functions deploy get_location_policy \
+    --runtime python37 \
+    --trigger-http \
+    --no-allow-unauthenticated \
+    --ingress-settings internal-and-gclb \
+    --entry-point event_handler \
+    --source ./function \
+    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA
+
+    source ./create_remote_function.sh
+    popd
+    ```
+
+1. Create `get_masking_rule` function:
+
+    ```bash
+    pushd remote_functions/masking_rule
+
+    gcloud functions deploy get_masking_rule \
+    --runtime python37 \
+    --trigger-http \
+    --no-allow-unauthenticated \
+    --ingress-settings internal-and-gclb \
+    --entry-point event_handler \
+    --source ./function \
+    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA
+
+    source ./create_remote_function.sh
+    popd
+    ```
+
+1. Create `get_table_encryption_method` function:
+
+    ```bash
+    pushd remote_functions/table_encryption_method
+
+    gcloud functions deploy get_table_encryption_method \
+    --runtime python37 \
+    --trigger-http \
+    --no-allow-unauthenticated \
+    --ingress-settings internal-and-gclb \
+    --entry-point event_handler \
+    --source ./function \
+    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA
+
+    source ./create_remote_function.sh
+    popd
+    ```
+
+1. Create `get_ultimate_source` function:
+
+    ```bash
+    pushd remote_functions/ultimate_source
+
+    gcloud functions deploy get_ultimate_source \
+    --runtime python37 \
+    --trigger-http \
+    --no-allow-unauthenticated \
+    --ingress-settings internal-and-gclb \
+    --entry-point process_request \
+    --source ./function \
+    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA
+
+    source ./create_remote_function.sh
+    popd
+    ```
+
+1. The resource locations Organization Policy Service constraint defines the Google Cloud regions that you can store data in. By default, the architecture sets the constraint on the Confidential data project, you can do that by following de series of steps below:
+
+    - Create a `policy.yaml` file with the following content, remember to replace `PROJECT_ID_DATA` string with your environment `PROJECT_ID_DATA` value:
+
+        ```yaml
+        name: projects/PROJECT_ID_DATA/policies/gcp.resourceLocations
+        spec:
+          rules:
+          - values:
+                allowedValues:
+                - in:us-central1-locations
+        ```
+
+    - Run the command below on the same directory as `policy.yaml`:
+
+        ```bash
+        gcloud org-policies set-policy policy.yaml
+        ```
+
+1. Retrieve Cloud Function Service Account e-mail:
+
+    ```bash
+    CF_SA_EMAIL=$(gcloud functions describe get_bytes_transferred --format=json | python3 -c "import sys, json; print(json.load(sys.stdin)['serviceAccountEmail'])")
+    echo $CF_SA_EMAIL
+    ```
+
+1. Assign BigQuery Data Viewer, BigQuery Job User, and Organization Policy Viewer permissions on Confidential Data project for the Service Account:
+
+    ```bash
+    gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/bigquery.dataViewer" --member="serviceAccount:$CF_SA_EMAIL"
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/bigquery.jobUser" --member="serviceAccount:$CF_SA_EMAIL"
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/orgpolicy.policyViewer" --member="serviceAccount:$CF_SA_EMAIL"
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/cloudkms.viewer" --member="serviceAccount:$CF_SA_EMAIL"
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/datalineage.viewer" --member="serviceAccount:$CF_SA_EMAIL"
+    ```
+
+1. Enable `orgpolicy.googleapis.com` API on Governance Project:
+
+    ```bash
+    gcloud services enable orgpolicy.googleapis.com
+    ```
+
+1. It is recommended to open your BigQuery Studio and perform some sample queries, to ensure that the remote functions are working as expected, remember to replace placeholders (PROJECT_ID_GOV, PROJECT_ID_DATA, PROJECT_NUMBER_DATA) with values from your environment:
+
+    ```sql
+    select `PROJECT_ID_GOV`.remote_functions.get_location_policy('PROJECT_ID_DATA');
+    ```
+
+    ```sql
+    select `PROJECT_ID_GOV`.remote_functions.get_table_encryption_method('PROJECT_ID_DATA', 'hr', 'Employee');
+    ```
+
+    ```sql
+    select `PROJECT_ID_GOV`.remote_functions.get_ultimate_source('PROJECT_ID_DATA', PROJECT_NUMBER_DATA, 'us-central1', 'crm', 'NewCust');
+    ```
 
 #### Part 4: Tag Engine deployment and configuration
 
-5. Deploy Tag Engine in your GCP project by following Tag Engine's [deployment guide](https://github.com/GoogleCloudPlatform/datacatalog-tag-engine/blob/cloud-run/README.md).
+1. Deploy Tag Engine in your GCP project by following Tag Engine's [deployment guide](https://github.com/GoogleCloudPlatform/datacatalog-tag-engine/blob/cloud-run/README.md).
 
-6. Set environment variables:
+1. Set environment variables:
 
-```
+```bash
 export TAG_ENGINE_URL=`gcloud run services describe tag-engine --format="value(status.url)"`
 export IAM_TOKEN=$(gcloud auth print-identity-token)
 export OAUTH_TOKEN=$(gcloud auth application-default print-access-token)
@@ -326,7 +489,7 @@ curl -X POST $TAG_ENGINE_URL/create_export_config \
  -H "oauth_token: $OAUTH_TOKEN"
 ```
 
-#### Part 4: Tag update orchestration
+#### Part 5: Tag update orchestration
 
 9. Enable the Cloud Workflows API.
 

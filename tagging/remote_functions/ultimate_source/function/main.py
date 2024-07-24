@@ -13,11 +13,19 @@
 # limitations under the License.
 
 import google.auth.transport.requests
-from google.oauth2 import service_account
+import requests, json
 
-import base64, requests, json, os
+import google.auth
+import google.auth.transport.requests
 
 SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+
+def get_adc_access_token():
+    creds, project = google.auth.default()
+    auth_req = google.auth.transport.requests.Request()
+    creds.refresh(auth_req)
+    
+    return creds.token
 
 def process_request(request):
         
@@ -46,24 +54,13 @@ def process_request(request):
     print('ultimate_source:', ultimate_source)
     
     return json.dumps({"replies": [ultimate_source]})
-
-
-def get_credentials_from_environment():
-
-    secret = os.getenv('SECRET')
-    service_account_info = json.loads(secret)
-    credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
-    auth_req = google.auth.transport.requests.Request()
-    credentials.refresh(auth_req)
-     
-    return credentials.token
     
 
 def get_source_links(target, project_num, region):
 
     api = 'https://' + region + '-datalineage.googleapis.com/v1'
     url = '{0}/projects/{1}/locations/{2}:searchLinks'.format(api, project_num, region)
-    headers = {'Authorization' : 'Bearer ' + get_credentials_from_environment()}
+    headers = {'Authorization' : 'Bearer ' + get_adc_access_token()}
     payload = {'target': {'fully_qualified_name': target, 'location': region}}
 
     res = requests.post(url, headers=headers, data=json.dumps(payload)).json()

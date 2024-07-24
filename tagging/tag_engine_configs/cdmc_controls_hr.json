@@ -33,7 +33,7 @@
         },
         {
             "field_id": "ultimate_source",
-            "query_expression": "select `PROJECT_ID_GOV`.remote_functions.get_ultimate_source('$project', 707062315533, 'REGION', '$dataset', '$table');"
+            "query_expression": "select `PROJECT_ID_GOV`.remote_functions.get_ultimate_source('$project', PROJECT_NUMBER_DATA, 'REGION', '$dataset', '$table');"
         },
         {
             "field_id": "sharing_scope_geography",
