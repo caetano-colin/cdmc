@@ -285,7 +285,7 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
     - Replace `TAG_HISTORY_PROJECT` in `tagengine.ini` with `PROJECT_ID_GOV` variable value.
     - Replace `TAG_HISTORY_DATASET` in `tagengine.ini` with `tag_history_logs` value.
     - Replace `JOB_METADATA_PROJECT` in `tagengine.ini` with `PROJECT_ID_GOV` variable value.
-    - Create `deploy/terraform.tfvars` with the following values, remember to replace placeholder values with values from your environment:
+    - Assuming you are deploying with terraform, Create `deploy/terraform.tfvars` with the following values, remember to replace placeholder values with values from your environment:
 
         ```terraform
         bigquery_project = "PROJECT_ID_DATA"
