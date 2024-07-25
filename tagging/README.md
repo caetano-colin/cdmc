@@ -329,7 +329,7 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
 1. Set environment variables:
 
     ```bash
-    export TAG_ENGINE_URL=`gcloud run services describe tag-engine-api --format="value(status.url)"`
+    export TAG_ENGINE_URL=`gcloud run services describe tag-engine-api --format="value(status.url)" --project=$PROJECT_ID_GOV`
     export IAM_TOKEN=$(gcloud auth print-identity-token)
     export OAUTH_TOKEN=$(gcloud auth application-default print-access-token)
     ```
@@ -370,199 +370,203 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
 1. Create the tag engine configurations, take note of the `config_uuid` that each command outputs, it will be used later on when orchestrating the workflow:
 
     ```bash
+    # Create config outputs directory
+    export OUT_DIR=/tmp/tag-engine-config-outputs
+    mkdir -p $OUT_DIR
+
     curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
     -d @tag_engine_configs/data_sensitivity_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/data_sensitivity_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
     -d @tag_engine_configs/data_sensitivity_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/data_sensitivity_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
     -d @tag_engine_configs/data_sensitivity_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/data_sensitivity_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
     -d @tag_engine_configs/data_sensitivity_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/data_sensitivity_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_sensitive_column_config \
     -d @tag_engine_configs/data_sensitivity_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/data_sensitivity_finwire_output.json
     ```
-    
+
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cdmc_controls_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cdmc_controls_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cdmc_controls_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cdmc_controls_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cdmc_controls_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cdmc_controls_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cdmc_controls_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cdmc_controls_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cdmc_controls_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cdmc_controls_finwire_output.json
     ```
 
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/security_policy_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/security_policy_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/security_policy_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/security_policy_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/security_policy_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/security_policy_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/security_policy_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/security_policy_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/security_policy_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/security_policy_finwire_output.json
     ```
 
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cost_metrics_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cost_metrics_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cost_metrics_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cost_metrics_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cost_metrics_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cost_metrics_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cost_metrics_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cost_metrics_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/cost_metrics_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/cost_metrics_finwire_output.json
     ```
 
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/completeness_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/completeness_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/completeness_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/completeness_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/completeness_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/completeness_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/completeness_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/completeness_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/completeness_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/completeness_finwire_output.json
     ```
 
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/correctness_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/correctness_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/correctness_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/correctness_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/correctness_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/correctness_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/correctness_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/correctness_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_column_config \
     -d @tag_engine_configs/correctness_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/correctness_finwire_output.json
     ```
 
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/impact_assessment_crm.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/impact_assessment_crm_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/impact_assessment_hr.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/impact_assessment_hr_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/impact_assessment_oltp.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/impact_assessment_oltp_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/impact_assessment_sales.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/impact_assessment_sales_output.json
 
     curl -X POST $TAG_ENGINE_URL/create_dynamic_table_config \
     -d @tag_engine_configs/impact_assessment_finwire.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/impact_assessment_finwire_output.json
     ```
 
     ```bash
     curl -X POST $TAG_ENGINE_URL/create_export_config \
     -d @tag_engine_configs/export_all_tags.json \
     -H "Authorization: Bearer $IAM_TOKEN" \
-    -H "oauth_token: $OAUTH_TOKEN"
+    -H "oauth_token: $OAUTH_TOKEN" | tee $OUT_DIR/tag_export_output.json
     ```
 
 #### Part 5: Tag update orchestration
