@@ -580,7 +580,7 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
 1. Open each yaml file under the `/orchestration` folder, and replace the `config_uuid` values starting on line 9 with the actual values you received from the previous step when creating the configs.
 
     - If your `curl` and `tee` commands ran as expected you will have a directory on `OUT_DIR` that contains files with all created configs uuid's. In that case, follow the steps below, otherwise, proceed with the next step:
-        - The script will generate a series of `sed` commands that are used to search and replace placeholders, run the bash script:
+        - The script will generate a series of `sed` commands that are used to search and replace placeholders, run the bash script to get the commands and run them one by one:
 
             ```bash
             ./generate_sed_commands.sh $OUT_DIR
