@@ -20,4 +20,4 @@ gcloud functions add-iam-policy-binding get_location_policy \
 	--role='roles/cloudfunctions.invoker'
 
 
-#select `sdw-data-gov-b1927e-dd69`.remote_functions.get_location_policy('sdw-conf-b1927e-bcc1');
+#select `PROJECT_ID_GOV`.remote_functions.get_location_policy('sdw-conf-b1927e-bcc1');

@@ -19,4 +19,4 @@ gcloud projects add-iam-policy-binding $PROJECT_ID_DATA \
 	--member=serviceAccount:$TAG_CREATOR_SA \
 	--role='roles/datalineage.viewer'
 
-# select `sdw-data-gov-b1927e-dd69`.remote_functions.get_ultimate_source('sdw-conf-b1927e-bcc1', 707062315533, 'us-central1', 'crm', 'NewCust');
+# select `PROJECT_ID_GOV`.remote_functions.get_ultimate_source('sdw-conf-b1927e-bcc1', 707062315533, 'us-central1', 'crm', 'NewCust');

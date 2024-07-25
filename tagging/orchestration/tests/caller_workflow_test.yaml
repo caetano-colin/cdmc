@@ -4,7 +4,7 @@ main:
     - export:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/called-workflow-test"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/called-workflow-test"
             body:
                 argument: "{\"oauth\": \" $args.oauth_token \"}"
         result: name

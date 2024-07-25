@@ -19,5 +19,5 @@ gcloud projects add-iam-policy-binding $PROJECT_ID_DATA \
 	--member=serviceAccount:$TAG_CREATOR_SA \
 	--role='roles/cloudkms.viewer'
 
-#select `sdw-data-gov-b1927e-dd69`.remote_functions.get_encryption_type('sdw-conf-b1927e-bcc1', 'crm', 'NewCust');
-#select `sdw-data-gov-b1927e-dd69`.remote_functions.get_encryption_type('sdw-conf-b1927e-bcc1', 'hr', 'Employee');
+#select `PROJECT_ID_GOV`.remote_functions.get_encryption_type('sdw-conf-b1927e-bcc1', 'crm', 'NewCust');
+#select `PROJECT_ID_GOV`.remote_functions.get_encryption_type('sdw-conf-b1927e-bcc1', 'hr', 'Employee');

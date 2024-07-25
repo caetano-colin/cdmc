@@ -3,10 +3,10 @@ main:
   - create_build:
       call: googleapis.cloudbuild.v1.projects.builds.create
       args:
-        projectId: "sdw-data-gov-b1927e-dd69"
-        parent: "projects/sdw-data-gov-b1927e-dd69/locations/global"
+        projectId: "PROJECT_ID_GOV"
+        parent: "projects/PROJECT_ID_GOV/locations/global"
         body:
-          serviceAccount: "projects/sdw-data-gov-b1927e-dd69/serviceAccounts/tag-client@sdw-data-gov-b1927e-dd69.iam.gserviceaccount.com"
+          serviceAccount: "projects/PROJECT_ID_GOV/serviceAccounts/tag-client@PROJECT_ID_GOV.iam.gserviceaccount.com"
           options:
             logging: CLOUD_LOGGING_ONLY
           steps:

@@ -19,5 +19,5 @@ gcloud functions add-iam-policy-binding get_bytes_transferred \
 	--member="serviceAccount:$service_account_string" \
 	--role='roles/cloudfunctions.invoker'
 	
-#select `sdw-data-gov-b1927e-dd69`.remote_functions.get_bytes_transferred('bytes', 'sdw-conf-b1927e-bcc1', 'crm', 'AddAcct');
-#select `sdw-data-gov-b1927e-dd69`.remote_functions.get_bytes_transferred('cost', 'sdw-conf-b1927e-bcc1', 'crm', 'NewCust');
+#select `PROJECT_ID_GOV`.remote_functions.get_bytes_transferred('bytes', 'sdw-conf-b1927e-bcc1', 'crm', 'AddAcct');
+#select `PROJECT_ID_GOV`.remote_functions.get_bytes_transferred('cost', 'sdw-conf-b1927e-bcc1', 'crm', 'NewCust');

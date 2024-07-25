@@ -3,7 +3,7 @@ main:
     - get_oauth_token_1:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_1:
         assign: 
@@ -11,14 +11,14 @@ main:
     - data_sensitivity:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-data-sensitivity"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-data-sensitivity"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: data_sensitivity_result
     - get_oauth_token_2:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_2:
         assign: 
@@ -26,14 +26,14 @@ main:
     - cdmc_controls:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-cdmc-controls"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-cdmc-controls"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: cdmc_controls_result
     - get_oauth_token_3:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_3:
         assign: 
@@ -41,14 +41,14 @@ main:
     - security_policy:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-security-policy"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-security-policy"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: security_policy_result
     - get_oauth_token_4:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_4:
         assign: 
@@ -56,14 +56,14 @@ main:
     - cost_metrics:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-cost-metrics"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-cost-metrics"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: cost_metrics_result
     - get_oauth_token_5:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_5:
         assign: 
@@ -71,14 +71,14 @@ main:
     - completeness:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-completeness"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-completeness"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: completeness_result
     - get_oauth_token_6:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_6:
         assign: 
@@ -86,14 +86,14 @@ main:
     - correctness:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-correctness"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-correctness"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: correctness_result
     - get_oauth_token_7:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_7:
         assign: 
@@ -101,14 +101,14 @@ main:
     - impact_assessment:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-updates-impact-assessment"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-updates-impact-assessment"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: impact_assessment_result
     - get_oauth_token_8:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/oauth-token"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/oauth-token"
         result: oauth_token
     - format_token_8:
         assign: 
@@ -116,7 +116,7 @@ main:
     - export:
         call: googleapis.workflowexecutions.v1.projects.locations.workflows.executions.create
         args:
-            parent: "projects/sdw-data-gov-b1927e-dd69/locations/us-central1/workflows/tag-exports-all-templates"
+            parent: "projects/PROJECT_ID_GOV/locations/us-central1/workflows/tag-exports-all-templates"
             body:
                 argument: '${"{" + "\"oauth_token\": \"" + formatted_token + "\"" + "}"}'
         result: export_result
