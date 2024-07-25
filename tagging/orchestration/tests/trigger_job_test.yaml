@@ -7,7 +7,7 @@ main:
      - trigger_job:
          call: http.post
          args:
-           url: https://tag-engine-h5dcyzhzta-uc.a.run.app/trigger_job
+           url: REPLACE_WITH_TAG_ENGINE_URL/trigger_job
            headers:
              oauth_token: ${args.oauth_token}
            auth:
@@ -19,7 +19,7 @@ main:
      - get_job_status:
          call: http.post
          args:
-           url: https://tag-engine-h5dcyzhzta-uc.a.run.app/get_job_status
+           url: REPLACE_WITH_TAG_ENGINE_URL/get_job_status
            headers:
              oauth_token: ${args.oauth_token}
            auth:
