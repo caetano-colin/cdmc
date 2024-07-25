@@ -1,6 +1,6 @@
 {
     "template_id": "security_policy",
-    "template_project": "PROJECT_ID_GOV",
+    "template_project": "PROJECT_ID_DATA",
     "template_region": "REGION",
     "fields": [
         {
