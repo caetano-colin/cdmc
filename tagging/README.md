@@ -579,6 +579,17 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
 
 1. Open each yaml file under the `/orchestration` folder, and replace the `config_uuid` values starting on line 9 with the actual values you received from the previous step when creating the configs.
 
+    - If your `curl` and `tee` commands ran as expected you will have a directory on `OUT_DIR` that contains files with all created configs uuid's. In that case, follow the steps below, otherwise, proceed with the next step:
+        - The script will generate a series of `sed` commands that are used to search and replace placeholders, run the bash script:
+
+            ```bash
+            ./generate_sed_commands.sh $OUT_DIR
+            ```
+
+            > Note: This script requires `jq` utility to be installed on your machine and that you run it inside `tagging/` directory.
+
+    - If your commands did not produce a directory with saved config uuid's or the script didn't work, you will have to manually create each config, retrieve the `config_uuid` generated and replace it under the corresponding file under `/orchestration` folder.
+
 1. Replace `REPLACE_WITH_TAG_ENGINE_URL` placeholder with your `TAG_ENGINE_URL`:
 
     ```bash

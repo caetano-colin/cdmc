@@ -6,35 +6,35 @@ main:
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "REPLACE_WITH_CRM_ASSESSMENT_CONFIG_UUID"
+            config_uuid: "REPLACE_WITH_CRM_IMPACT_ASSESSMENT_CONFIG_UUID"
           result: impact_assessment_crm_status
       - impact_assessment_hr:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "REPLACE_WITH_HR_ASSESSMENT_CONFIG_UUID"
+            config_uuid: "REPLACE_WITH_HR_IMPACT_ASSESSMENT_CONFIG_UUID"
           result: impact_assessment_hr_status
       - impact_assessment_oltp:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "REPLACE_WITH_OLTP_ASSESSMENT_CONFIG_UUID"
+            config_uuid: "REPLACE_WITH_OLTP_IMPACT_ASSESSMENT_CONFIG_UUID"
           result: impact_assessment_oltp_status
       - impact_assessment_sales:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "REPLACE_WITH_SALES_ASSESSMENT_CONFIG_UUID"
+            config_uuid: "REPLACE_WITH_SALES_IMPACT_ASSESSMENT_CONFIG_UUID"
           result: impact_assessment_sales_status
       - impact_assessment_finwire:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "REPLACE_WITH_FINWIRE_ASSESSMENT_CONFIG_UUID"
+            config_uuid: "REPLACE_WITH_FINWIRE_IMPACT_ASSESSMENT_CONFIG_UUID"
           result: impact_assessment_finwire_status
       - return_message:
           return: "done"
