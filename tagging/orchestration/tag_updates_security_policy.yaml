@@ -6,35 +6,35 @@ main:
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "365f07feec2411ed92b79bd64615ec44"
+            config_uuid: "REPLACE_WITH_CRM_SECURITY_POLICY_CONFIG_UUID"
           result: security_policy_crm_status
       - security_policy_hr:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "096fc7f0ec2511eda40051c428bb776e"
+            config_uuid: "REPLACE_WITH_HR_SECURITY_POLICY_CONFIG_UUID"
           result: security_policy_hr_status
       - security_policy_oltp:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "c5f52e52ec2911eda736e55a872784bf"
+            config_uuid: "REPLACE_WITH_OLTP_SECURITY_POLICY_CONFIG_UUID"
           result: security_policy_oltp_status
       - security_policy_sales:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "fba9bcf2ec2911edbd5ee55a872784bf"
+            config_uuid: "REPLACE_WITH_SALES_SECURITY_POLICY_CONFIG_UUID"
           result: security_policy_sales_status
       - security_policy_finwire:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "33111500ec2a11edbd5ee55a872784bf"
+            config_uuid: "REPLACE_WITH_FINWIRE_SECURITY_POLICY_CONFIG_UUID"
           result: security_policy_finwire_status
       - return_message:
           return: "done"

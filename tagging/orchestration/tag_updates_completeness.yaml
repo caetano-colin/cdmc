@@ -6,35 +6,35 @@ main:
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "697b875cec3811edb4dee53d32969c2c"
+            config_uuid: "REPLACE_WITH_CRM_COMPLETENESS_CONFIG_UUID"
           result: completeness_crm_status
       - completeness_hr:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "ab63848aec3811edb4dee53d32969c2c"
+            config_uuid: "REPLACE_WITH_HR_COMPLETENESS_CONFIG_UUID"
           result: completeness_hr_status
       - completeness_oltp:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "0e833a56ec3911edae1b95ab8013e17f"
+            config_uuid: "REPLACE_WITH_OLTP_COMPLETENESS_CONFIG_UUID"
           result: completeness_oltp_status
       - completeness_sales:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "3b53291aec3911eda786e53d32969c2c"
+            config_uuid: "REPLACE_WITH_SALES_COMPLETENESS_CONFIG_UUID"
           result: completeness_sales_status
       - completeness_finwire:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_COLUMN"
-            config_uuid: "631efc80ec3911edb4dee53d32969c2c"
+            config_uuid: "REPLACE_WITH_FINWIRE_COMPLETENESS_CONFIG_UUID"
           result: completeness_finwire_status
       - return_message:
           return: "done"

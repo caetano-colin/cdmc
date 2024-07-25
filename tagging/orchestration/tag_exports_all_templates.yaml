@@ -6,7 +6,7 @@ main:
           args:
             oauth_token: ${args.oauth_token}
             config_type: "TAG_EXPORT"
-            config_uuid: "2423082aec4111ed9bafebb7a31975c4"
+            config_uuid: "REPLACE_WITH_TAG_EXPORT_CONFIG_UUID"
           result: export_status
       - return_message:
           return: "done"

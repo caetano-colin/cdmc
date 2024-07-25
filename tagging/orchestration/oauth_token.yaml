@@ -6,7 +6,7 @@ main:
         projectId: "PROJECT_ID_GOV"
         parent: "projects/PROJECT_ID_GOV/locations/global"
         body:
-          serviceAccount: "projects/PROJECT_ID_GOV/serviceAccounts/tag-client@PROJECT_ID_GOV.iam.gserviceaccount.com"
+          serviceAccount: "projects/PROJECT_ID_GOV/serviceAccounts/cloud-run@PROJECT_ID_GOV.iam.gserviceaccount.com"
           options:
             logging: CLOUD_LOGGING_ONLY
           steps:

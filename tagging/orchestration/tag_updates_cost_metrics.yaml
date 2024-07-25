@@ -6,35 +6,35 @@ main:
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "feb5e302ec3911edb70be53d32969c2c"
+            config_uuid: "REPLACE_WITH_CRM_COST_METRICS_CONFIG_UUID"
           result: cost_metrics_crm_status
       - cost_metrics_hr:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "0b62801aec3a11ed9bb9e53d32969c2c"
+            config_uuid: "REPLACE_WITH_HR_COST_METRICS_CONFIG_UUID"
           result: cost_metrics_hr_status
       - cost_metrics_oltp:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "170f7288ec3a11eda957e53d32969c2c"
+            config_uuid: "REPLACE_WITH_OLTP_COST_METRICS_CONFIG_UUID"
           result: cost_metrics_oltp_status
       - cost_metrics_sales:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "23fe69feec3a11eda786e53d32969c2c"
+            config_uuid: "REPLACE_WITH_SALES_COST_METRICS_CONFIG_UUID"
           result: cost_metrics_sales_status
       - cost_metrics_finwire:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "DYNAMIC_TAG_TABLE"
-            config_uuid: "2e9e76ecec3a11edb216e53d32969c2c"
+            config_uuid: "REPLACE_WITH_FINWIRE_COST_METRICS_CONFIG_UUID"
           result: cost_metrics_finwire_status
       - return_message:
           return: "done"

@@ -6,35 +6,35 @@ main:
           args:
             oauth_token: ${args.oauth_token}
             config_type: "SENSITIVE_TAG_COLUMN"
-            config_uuid: "45394c58eaa811ed8b314fc3e703935d"
+            config_uuid: "REPLACE_WITH_CRM_DATA_SENSITIVITY_CONFIG_UUID"
           result: sensitive_tag_crm_status
       - sensitive_tag_hr:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "SENSITIVE_TAG_COLUMN"
-            config_uuid: "7406daa8eaaa11ed96bb691325c5401e"
+            config_uuid: "REPLACE_WITH_HR_DATA_SENSITIVITY_CONFIG_UUID"
           result: sensitive_tag_hr_status
       - sensitive_tag_oltp:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "SENSITIVE_TAG_COLUMN"
-            config_uuid: "27b8aa4aeaab11ed95ce41aca72ee75f"
+            config_uuid: "REPLACE_WITH_OLTP_DATA_SENSITIVITY_CONFIG_UUID"
           result: sensitive_tag_oltp_status
       - sensitive_tag_sales:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "SENSITIVE_TAG_COLUMN"
-            config_uuid: "60201a08eaab11ed8a22bb38d4c64047"
+            config_uuid: "REPLACE_WITH_SALES_DATA_SENSITIVITY_CONFIG_UUID"
           result: sensitive_tag_sales_status
       - sensitive_tag_finwire:
           call: trigger_job_flow
           args:
             oauth_token: ${args.oauth_token}
             config_type: "SENSITIVE_TAG_COLUMN"
-            config_uuid: "df0448eeeaab11ed8a22bb38d4c64047"
+            config_uuid: "REPLACE_WITH_FINWIRE_DATA_SENSITIVITY_CONFIG_UUID"
           result: sensitive_tag_finwire_status
       - return_message:
           return: "done"
