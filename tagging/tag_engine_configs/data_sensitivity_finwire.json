@@ -15,7 +15,7 @@
 	"infotype_classification_table": "bigquery/project/PROJECT_ID_GOV/dataset/data_classification/infotype_classification",
 	"included_tables_uris": "bigquery/project/PROJECT_ID_DATA/dataset/finwire/*",
     "create_policy_tags": true,
-    "taxonomy_id": "projects/PROJECT_ID_GOV/locations/REGION/taxonomies/730755508715999596",
+    "taxonomy_id": "REPLACE_WITH_YOUR_DATA_TAXONOMY",
     "refresh_mode": "ON_DEMAND",
     "tag_history": true,
     "tag_stream": false
