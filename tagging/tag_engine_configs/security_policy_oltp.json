@@ -5,7 +5,7 @@
     "fields": [
         {
             "field_id": "platform_deid_method",
-            "query_expression": "select `PROJECT_ID_GOV`.remote_functions.get_masking_rule('$project', '$dataset', '$table','$column');"
+            "query_expression": "select `PROJECT_ID_GOV`.remote_functions.get_masking_rule('$project', '$dataset', '$table','$column')"
         }
     ],
     "included_columns_query": "select distinct SUBSTR(asset_name, INSTR(asset_name, '/', -1)+1) from PROJECT_ID_GOV.tag_history_logs.data_sensitivity where CONTAINS_SUBSTR(asset_name, '$project/dataset/$dataset/table/$table')",
