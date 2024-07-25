@@ -171,7 +171,7 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
     --ingress-settings internal-and-gclb \
     --entry-point event_handler \
     --source ./function \
-    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA
+    --set-env-vars REGION=$REGION,PROJECT_ID_DATA=$PROJECT_ID_DATA,PROJECT_ID_GOV=$PROJECT_ID_GOV
 
     source ./create_remote_function.sh
     popd
@@ -275,6 +275,8 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
 
 #### Part 4: Tag Engine deployment and configuration
 
+This documentation was validated using the following fork of tag engine: https://github.com/caetano-colin/datacatalog-tag-engine
+
 1. Deploy Tag Engine in your Governance Project by following Tag Engine's [deployment guide](https://github.com/GoogleCloudPlatform/datacatalog-tag-engine/blob/cloud-run/README.md). Information below will help you choose parameters when deploying:
     - Designate `$TAG_CREATOR_SA` and `$CLOUD_RUN_SA` as the service accounts to be used on the tag engine deployment. You can access their values by running `echo $TAG_CREATOR_SA` and `echo $CLOUD_RUN_SA`.
     - Replace `TAG_ENGINE_SA` in `tagengine.ini` with `CLOUD_RUN_SA` variable value.
@@ -322,6 +324,8 @@ Before proceeding with the steps below, ensure you have run `environment-variabl
         gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --role="roles/bigquery.user" --member="serviceAccount:$TAG_CREATOR_SA"
         
         gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --role="roles/datacatalog.viewer" --member="serviceAccount:$TAG_CREATOR_SA"
+
+        gcloud projects add-iam-policy-binding $PROJECT_ID_GOV --role="roles/bigquery.connectionUser" --member="serviceAccount:$TAG_CREATOR_SA"
 
         gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role="roles/datacatalog.tagTemplateUser" --member="serviceAccount:$TAG_CREATOR_SA"
         ```
