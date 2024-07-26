@@ -44,7 +44,15 @@ After the execution of the requirements, Report Engine can be deployed in Cloud 
 
 For convenience, you can use the `deploy_reportengine.sh` script to deploy to cloud run.
 
-Create a `resources/config.ini` file using the template as a basis
+Create a `resources/config.ini` file with values from your environment:
+
+```bash
+pushd resources
+sed -i "s/PROJECT_ID_GOV/$PROJECT_ID_GOV/" config.ini
+sed -i "s/PROJECT_ID_DATA/$PROJECT_ID_DATA/" config.ini
+sed -i "s/REGION/$REGION/" config.ini
+popd
+```
 
 The script will:
 
@@ -69,24 +77,23 @@ If you prefer to deploy to Compute Engine, perform the following steps:
 
 - Create a config.ini file with the correct variables using the template. You can use these commands:
 
-    ```
-    pushd resources
-    ## Create a copy of the config.ini.template and substitute values
-    cp config.ini.template config.ini
-    sed -i "s/<PROJECT_ID_GOV>/$PROJECT_ID_GOV/" config.ini
-    sed -i "s/<REGION>/$REGION/" config.ini
+    ```bash
+    pushd resources        
+    sed -i "s/PROJECT_ID_GOV/$PROJECT_ID_GOV/" config.ini
+    sed -i "s/PROJECT_ID_DATA/$PROJECT_ID_DATA/" config.ini
+    sed -i "s/REGION/$REGION/" config.ini
     popd
     ```
 
 - Install all Python requirements from requirements.txt file;
 
-    ```
+    ```bash
     python3 -m pip install -r requirements.txt
     ```
 
 - Execute the python3 main.py file
 
-    ```
+    ```bash
     python3 generate_report.py
     ```
 
