@@ -45,7 +45,7 @@
         },
         {
             "field_id": "encryption_method",
-            "query_expression": "select `PROJECT_ID_GOV`.remote_functions.get_encryption_type('$project', '$dataset', '$table');"
+            "query_expression": "select `PROJECT_ID_GOV`.remote_functions.get_table_encryption_method('$project', '$dataset', '$table');"
         },
         {
             "field_id": "retention_period",
