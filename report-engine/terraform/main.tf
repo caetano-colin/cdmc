@@ -27,40 +27,40 @@ resource "google_project_service" "project-services" {
   project = var.project
   count   = length(var.gcp_services)
   service = var.gcp_services[count.index]
-  disable_dependent_services = true
 }
 
-data "google_project" "project" {}
+data "google_project" "project" {
+  project_id = var.project
+}
 
 resource "google_service_account" "sa-report-engine" {
-  account_id = "sa-report-engine"
-  display_name = "sa-report-engine"
+  account_id = "cdmc-reportengine"
+  display_name = "cdmc-reportengine"
   description = "SA used for CDMC report engine execution"
   project = var.project
 }
-
-resource "google_organization_iam_binding" "organization-bq-resourceViewer" {
+resource "google_organization_iam_member" "organization-bq-resourceViewer" {
   org_id  = var.organization
   role    = "roles/bigquery.resourceViewer"
-  members  = ["serviceAccount:${google_service_account.sa-report-engine.email}"]
+  member  = "serviceAccount:${google_service_account.sa-report-engine.email}"
 }
 
-resource "google_organization_iam_binding" "organization-bq-metadataViewer" {
+resource "google_organization_iam_member" "organization-bq-metadataViewer" {
   org_id  = var.organization
   role    = "roles/bigquery.metadataViewer"
-  members  = ["serviceAccount:${google_service_account.sa-report-engine.email}"]
+  member  = "serviceAccount:${google_service_account.sa-report-engine.email}"
 }
 
-resource "google_organization_iam_binding" "organization-datacatalog-viewer" {
+resource "google_organization_iam_member" "organization-datacatalog-viewer" {
   org_id  = var.organization
   role    = "roles/datacatalog.viewer"
-  members  = ["serviceAccount:${google_service_account.sa-report-engine.email}"]
+  member  = "serviceAccount:${google_service_account.sa-report-engine.email}"
 }
 
-resource "google_organization_iam_binding" "organization-datalineage-viewer" {
+resource "google_organization_iam_member" "organization-datalineage-viewer" {
   org_id  = var.organization
   role    = "roles/datalineage.viewer"
-  members  = ["serviceAccount:${google_service_account.sa-report-engine.email}"]
+  member  = "serviceAccount:${google_service_account.sa-report-engine.email}"
 }
 
 resource "google_project_iam_member" "project-bigquery-dataEditor" {
@@ -95,13 +95,14 @@ resource "google_project_iam_member" "default-pubsub-bq-editor" {
 
 resource "google_pubsub_schema" "pubsub-schema-cdmc-event" {
   name = "CDMC_Event"
+  project = var.project
   type = "AVRO"
   definition = "{\"type\": \"record\",\"name\": \"CDMC_Event\",\"fields\": [{\"name\": \"reportMetadata\",\"type\": {\"type\": \"record\",\"name\": \"Identifier\",\"fields\": [{\"name\": \"uuid\",\"type\": \"string\"},{\"name\": \"Controls\",\"type\": \"string\"}]}},{\"name\": \"CdmcControlNumber\",\"type\": \"int\"},{\"name\": \"Findings\",\"type\": \"string\"},{\"name\": \"DataAsset\",\"type\": \"string\"},{\"name\": \"RecommendedAdjustment\",\"type\": \"string\"},{\"name\": \"ExecutionTimestamp\",\"type\": \"string\"}]}"
 }
 
 resource "google_pubsub_topic" "cdmc-controls-topic" {
   name = "cdmc-controls-topic"
-
+  project = var.project
   depends_on = [google_pubsub_schema.pubsub-schema-cdmc-event]
   schema_settings {
     schema = join("/",["projects",var.project,"schemas","CDMC_Event"])
@@ -111,13 +112,14 @@ resource "google_pubsub_topic" "cdmc-controls-topic" {
 
 resource "google_pubsub_schema" "pubsub-schema-cdmc-data-assets" {
   name = "CDMC_Data_Assets"
+  project = var.project
   type = "AVRO"
   definition = "{\"type\": \"record\",\"name\": \"CDMC_Data_Assets\",\"fields\": [{\"name\": \"event_uuid\",\"type\": \"string\"},{\"name\": \"asset_name\",\"type\": \"string\"},{\"name\": \"sensitive\",\"type\": \"boolean\"},{\"name\": \"event_timestamp\",\"type\": \"string\"}]}"
 }
 
 resource "google_pubsub_topic" "cdmc-data-assets-topic" {
   name = "cdmc-data-assets-topic"
-
+  project = var.project
   depends_on = [google_pubsub_schema.pubsub-schema-cdmc-data-assets]
   schema_settings {
     schema = join("/",["projects",var.project,"schemas","CDMC_Data_Assets"])
@@ -236,7 +238,7 @@ EOF
 resource "google_pubsub_subscription" "cdmc-controls-topic-bq-sub" {
   name  = "cdmc-controls-topic-bq-sub"
   topic = google_pubsub_topic.cdmc-controls-topic.name
-
+  project = var.project
   bigquery_config {
     table = "${google_bigquery_table.table-events.project}.${google_bigquery_table.table-events.dataset_id}.${google_bigquery_table.table-events.table_id}"
     use_topic_schema = true
@@ -247,6 +249,7 @@ resource "google_pubsub_subscription" "cdmc-controls-topic-bq-sub" {
 
 resource "google_pubsub_subscription" "cdmc-data-assets-topic-bq-sub" {
   name  = "cdmc-data-assets-topic-bq-sub"
+  project = var.project
   topic = google_pubsub_topic.cdmc-data-assets-topic.name
 
   bigquery_config {

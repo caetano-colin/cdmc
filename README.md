@@ -110,5 +110,38 @@ Each component of the reference architecture has its own deployment guide. To de
 1. [data quality](./data-quality/README.md)
 1. [tagging](./tagging/README.md)
 1. [record manager](https://github.com/GoogleCloudPlatform/bigquery-record-manager/blob/main/README.md)
+    * When deploying record manager use this template for the `param.json` file, make sure you replace the placeholders (PROJECT_ID_DATA, PROJECT_ID_GOV, TAG_ENGINE_URL, REGION) with values from your environment:
+
+        ```json
+        {
+            "template_id": "cdmc_controls", 
+            "template_project": "PROJECT_ID_DATA", 
+            "template_region": "REGION", 
+            "retention_period_field": "retention_period",
+            "expiration_action_field": "expiration_action",
+            "projects_in_scope": ["PROJECT_ID_DATA"],
+            "datasets_in_scope": ["crm", "oltp", "hr"],
+            "bigquery_region": "REGION",
+            "snapshot_project": "PROJECT_ID_GOV",
+            "snapshot_dataset": "snapshots",
+            "snapshot_retention_period": 30,
+            "archives_bucket": "archived_assets",
+            "export_format": "parquet",
+            "archives_project": "PROJECT_ID_GOV",
+            "archives_dataset": "archives",
+            "remote_connection": "projects/PROJECT_ID_GOV/locations/REGION/connections/gcs_connection",
+            "tag_engine_endpoint": "TAG_ENGINE_URL",
+            "mode": "apply"
+        }
+        ```
+
+    * You need to assign additional roles required to the record manager by using the following command:
+
+        ```bash
+        gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role=roles/datacatalog.viewer --member=serviceAccount:$RECORD_MANAGER_SA        
+
+        gcloud projects add-iam-policy-binding $PROJECT_ID_DATA --role=roles/bigquery.dataEditor --member=serviceAccount:$RECORD_MANAGER_SA
+        ```
+
 1. [report engine](./report-engine/README.md)
 1. [dashboard](./dashboard/README.md)

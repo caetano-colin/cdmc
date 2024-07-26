@@ -24,19 +24,17 @@ gcloud config set project $PROJECT_ID_GOV
 ###########################
 # Create a SA for cloud run
 ###########################
-gcloud iam service-accounts create cdmc-reportengine \
-    --description="A service account that runs the CDMC Controls Engines" \
-    --display-name="cdmc-reportengine"
+export REPORTENGINE_SA=cdmc-reportengine@$PROJECT_ID_GOV.iam.gserviceaccount.com
 
-gcloud projects add-iam-policy-binding $BIGQUERY_PROJECT \
+gcloud projects add-iam-policy-binding $PROJECT_ID_DATA \
 	--member=serviceAccount:$REPORTENGINE_SA \
 	--role=roles/bigquery.dataEditor
 	
-gcloud projects add-iam-policy-binding $BIGQUERY_PROJECT \
+gcloud projects add-iam-policy-binding $PROJECT_ID_DATA \
 	--member=serviceAccount:$REPORTENGINE_SA \
 	--role=roles/bigquery.jobUser
 
-gcloud projects add-iam-policy-binding $BIGQUERY_PROJECT \
+gcloud projects add-iam-policy-binding $PROJECT_ID_DATA \
 	--member=serviceAccount:$REPORTENGINE_SA \
 	--role=roles/bigquery.metadataViewer
 
@@ -48,16 +46,18 @@ gcloud projects add-iam-policy-binding $PROJECT_ID_GOV \
 ## Deploy to cloud run
 ######################
 
-# Generate token
-gcloud auth application-default login
 export OAUTH_TOKEN=$(gcloud auth application-default print-access-token)
+
+
+gcloud builds submit --tag gcr.io/$PROJECT_ID_GOV/cdmc-reportengine .
 
 
 # Create a job in Cloud Run. Note parameters have to be passed here
 gcloud run deploy cdmc-reportengine \
     --image gcr.io/$PROJECT_ID_GOV/cdmc-reportengine \
     --region $REGION \
-    --service-account=$REPORTENGINE_SA
+    --service-account=$REPORTENGINE_SA \
+    --no-allow-unauthenticated
 
 
 # Export the endpoint in an environment variable (moved to env variables.sh)
