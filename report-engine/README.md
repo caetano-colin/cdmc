@@ -111,8 +111,14 @@ CDMC Report Engine is a Flask web application. The following request parameters 
 
 Sample request format (from local client):
 
-```
+```bash
 curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -X POST "$ENDPOINT/generate?orgId=$ORGANIZATION_ID&projectId=$PROJECT_ID_DATA&topicProjectId=$PROJECT_ID_GOV&topic=cdmc-controls-topic&projectNumber=$PROJECT_NUMBER_DATA&controls=020608"
+```
+
+To generate a report for all controls use:
+
+```bash
+curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -X POST "$ENDPOINT/generate?orgId=$ORGANIZATION_ID&projectId=$PROJECT_ID_DATA&topicProjectId=$PROJECT_ID_GOV&topic=cdmc-controls-topic&projectNumber=$PROJECT_NUMBER_DATA"
 ```
 
 ## CONFIGURATION CHANGES
