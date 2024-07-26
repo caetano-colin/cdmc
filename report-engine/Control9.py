@@ -54,6 +54,7 @@ class Control9:
             dict_deid[row["sensitive_category"].upper()+ "-" +row["pm_geo"].upper()].append(row["default_deid_method"].upper())                                                           
 
         for result in dc_results:
+            print("Retrieving information for: ",result.fully_qualified_name)
             table_location = getTableLocation(result.linked_resource)
             table_sensitivity = getTableTagValue(result.relative_resource_name,str(config["TAGS"]["Control9_tag_table_sensitivity"]), str(config["TAGS"]["Control9_display_table_sensivity"]), "stringValue")
             asset_encrypt = getTableTagValue(result.relative_resource_name,str(config["TAGS"]["Control9_tag_encrypt"]), str(config["TAGS"]["Control9_display_encrypt"]), "stringValue")

@@ -47,12 +47,14 @@ class Control4:
             }
             print("|---- Finding in asset:" + result.linked_resource)
             publishPubSubAvro(self.topic_project_id,self.topic,self.avsc_file,message)
-
+        # cdmc_controls
         tag_template_name=str(config["TAGS"]["Control4_template"])
-        tag_display_name=str(config["TAGS"]["Control4_display"])
-        results = searchCatalogAssets(self.org_id,self.project_id,str(config["DC_FILTERS"]["Control4_2"]))
+        # approved_storage_location
+        tag_display_name=str(config["TAGS"]["Control4_display"])        
+        results = searchCatalogAssets(self.org_id,self.project_id,str(config["DC_FILTERS"]["Control4_2"]))        
         for result in results:
-            location=getTableTagValue(result.relative_resource_name,tag_template_name,tag_display_name,"stringValue")
+            print("getTableTagValue() for result", result.fully_qualified_name)
+            location=getTableTagValue(result.relative_resource_name,tag_template_name,tag_display_name,"stringValue")            
             approved_locations=""
             for item in location.split(","):
                 approved_locations = approved_locations + config["LOCATIONS"][item].upper()

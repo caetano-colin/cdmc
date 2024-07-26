@@ -50,6 +50,7 @@ def queryTable(project_id, dataset, query_file):
     query = ""
     with open(query_file) as f:
         query = f.read()
+    print(f"query=",query.replace("$project_id",project_id).replace("$dataset",dataset))
     return client.query(query.replace("$project_id",project_id).replace("$dataset",dataset))
 
 def getBQAssets(source_project_id,source_region):

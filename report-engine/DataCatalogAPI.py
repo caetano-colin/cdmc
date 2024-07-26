@@ -36,7 +36,9 @@ def getColumnTagDict(asset, tag_template_name,tag_display_name, data_type):
 
 def getTableTagValue(asset,tag_template_name,tag_display_name, value_type):
     client = datacatalog_v1.DataCatalogClient()
+    print("getTableTagValue() asset=",asset)
     tagrequest = datacatalog_v1.ListTagsRequest(parent=asset)
+    print("getTableTagValue() tagrequest=",tagrequest)
     response_tags = client.list_tags(request=tagrequest)
     for item in response_tags.tags:
         if(item.template==tag_template_name):
@@ -50,7 +52,9 @@ def searchCatalogAssets(org_id, proj_id, filter):
     scope = datacatalog_v1.types.SearchCatalogRequest.Scope()
     #scope.include_project_ids.append(project_id)
     scope.include_org_ids.append(org_id)
-    search_results = datacatalog.search_catalog(scope=scope, query="projectId:" + project_id + " "+ filter)
+    query = "projectId:" + project_id + " "+ filter
+    print(f"searchCatalogAssets() - scope={scope} query={query}")
+    search_results = datacatalog.search_catalog(scope=scope, query=query)
     return search_results
 
 def getCatalogAssetTags(org_id,proj_id,entry):
